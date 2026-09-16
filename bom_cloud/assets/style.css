@@ -1,4 +1,6 @@
 /* 统一视觉：冷白工作台、深蓝文字和靛蓝重点，保留 Streamlit 原生交互。 */
+/* 隐藏右上角工具菜单和页脚；保留页头，确保手机端仍能打开侧边栏。 */
+#MainMenu, [data-testid="stToolbar"], footer {display: none !important;}
 .stApp {background: #f5f7fc;}
 .block-container {padding-top: 4rem; padding-bottom: 3rem; max-width: 1450px;}
 h1 {font-size: 2rem !important; letter-spacing: -.04em; color: #142746;}

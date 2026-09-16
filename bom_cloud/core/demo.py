@@ -4,6 +4,30 @@ from core.rules import timestamp, today_china
 from core.service import _add_order, uid
 
 
+def reset_demo_orders(store):
+    """用五条虚构订单替换当前订单；相对今天生成日期，比赛当天也能展示预警。
+
+    配置依次为：客户序号、产品序号、数量、距离必须发货日的天数。
+    可在此修改五条样例；最终交付日始终等于必须发货日加三天。
+    """
+    samples = [(0, 0, 120, -1), (1, 1, 60, 0), (2, 2, 200, 1),
+               (0, 1, 80, 3), (1, 0, 150, 8)]
+    today = today_china()
+    with store.transaction() as data:
+        # 保留档案；只重置订单相关表，避免残留历史记录指向旧订单。
+        data["orders"] = []
+        data["history"] = []
+        data["imports"] = []
+        for customer, product, quantity, offset in samples:
+            _add_order(data, {
+                "customer_id": data["customers"][customer % len(data["customers"])]["id"],
+                "product_id": data["products"][product % len(data["products"])]["id"],
+                "quantity": quantity,
+                "delivery_deadline": today + timedelta(days=offset + 3),
+                "notes": "一键加载的虚构演示订单",
+            }, source="演示数据")
+
+
 def seed_demo(store):
     """只在全新演示空间首次创建，后续刷新/重启都保留用户修改。"""
     with store.transaction() as data:

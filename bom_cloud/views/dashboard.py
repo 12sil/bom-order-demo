@@ -11,6 +11,12 @@ def render(store):
     notify()
     data = store.read()
     orders = enriched_orders(data)
+    # 顶部三个数字按全部月份的未发货订单统计，三类互斥，避免重复计数。
+    high, near, safe = st.columns(3)
+    high.metric("🔴 高风险", sum(o["level"] in ("overdue", "today") for o in orders))
+    near.metric("🟠 临期", sum(o["level"] == "urgent" for o in orders))
+    safe.metric("🟢 安全", sum(o["level"] == "normal" for o in orders))
+    st.caption("全部月份 · 仅未发货：高风险 = 逾期或今日必须发货；临期 = 1～3 天内必须发货；安全 = 超过 3 天。")
     today = today_china()
     left, right = st.columns([3, 1])
     with left:

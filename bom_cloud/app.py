@@ -12,8 +12,9 @@ from pathlib import Path
 import streamlit as st
 from filelock import Timeout
 from config import ROOT
-from core.storage import CsvStore, StorageError
-from core.demo import seed_demo
+from core.storage import StorageError
+from core.session_store import SessionCsvStore
+from core.demo import seed_demo, reset_demo_orders
 from views import dashboard, trace, importer, orders, customers, products
 
 st.set_page_config(page_title="序单 BOM · 智能订单管理", page_icon="📦", layout="wide", initial_sidebar_state="expanded")
@@ -30,9 +31,15 @@ try:
     if "demo_session" not in st.session_state:
         st.session_state.demo_session = uuid.uuid4().hex
     demo_root = Path(tempfile.gettempdir()) / "bom_competition_sessions" / st.session_state.demo_session
-    store = CsvStore(demo_root)
+    store = SessionCsvStore(demo_root)
     if demo:
         seed_demo(store)
+    with st.sidebar:
+        # 仅覆盖当前浏览器会话的演示订单，不影响其他访客和客户/产品档案。
+        st.caption("加载样例会替换当前会话全部订单及其送货、导入记录。")
+        if st.button("一键加载演示数据", key="load_demo", use_container_width=True):
+            reset_demo_orders(store)
+            st.success("已加载 5 条演示订单。")
 except (StorageError, OSError, Timeout) as exc:
     st.error(f"无法打开数据目录：{exc}")
     st.stop()

@@ -1,5 +1,6 @@
 """板块二：智能发货预警。预警清单独立于月份筛选，防止跨月漏单。"""
 import streamlit as st
+import pandas as pd
 from core.rules import today_china
 from core.query import enriched_orders, shipped_summary
 from core.service import update_status
@@ -17,6 +18,13 @@ def render(store):
     near.metric("🟠 临期", sum(o["level"] == "urgent" for o in orders))
     safe.metric("🟢 安全", sum(o["level"] == "normal" for o in orders))
     st.caption("全部月份 · 仅未发货：高风险 = 逾期或今日必须发货；临期 = 1～3 天内必须发货；安全 = 超过 3 天。")
+    st.markdown("#### 📊 订单预警分布概览")
+    chart = pd.DataFrame({"订单数量": [
+        sum(o["level"] in ("overdue", "today") for o in orders),
+        sum(o["level"] == "urgent" for o in orders),
+        sum(o["level"] == "normal" for o in orders),
+    ]}, index=["高风险", "临期", "安全"])
+    st.bar_chart(chart, y="订单数量", color="#3158dd", height=260)
     today = today_china()
     left, right = st.columns([3, 1])
     with left:

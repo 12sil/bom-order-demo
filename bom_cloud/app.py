@@ -62,6 +62,7 @@ with st.sidebar:
     st.divider()
     st.caption("免费比赛展示 · 临时演示数据")
     st.caption("最终交付日 − 3 天 = 必须发货日")
+    st.markdown('<div class="core-formula">💡 核心逻辑：最终交付日 − 3 天缓冲期 = 必须发货日</div>', unsafe_allow_html=True)
 if demo:
     st.info("比赛演示版：仅使用虚构样例。操作保存在当前会话；刷新、新会话或服务重启后可能重置，请勿录入真实业务资料。")
 try:

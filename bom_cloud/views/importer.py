@@ -48,8 +48,9 @@ def render(store):
     result = st.session_state.get(result_key)
     if result:
         st.subheader("识别结果与核对")
-        for issue in result["issues"]:
-            st.warning(str(issue))
+        if result["issues"]:
+            st.warning("⚠️ 系统拦截：订单格式不符合规范，未识别到完整字段。\n\n这是系统的安全校验机制，请上传格式清晰的图片或手动录入。")
+            st.caption("规则校验拦截 · 原始文件不会被错误写入订单数据。")
         with st.expander("查看识别原文与字段依据"):
             st.text(result["raw_text"] or "未提取到文字。")
             if result["ocr_score"] is not None:
@@ -63,7 +64,7 @@ def render(store):
                 rows = edited.fillna("").to_dict("records")
                 errors = validation_errors(rows)
                 if errors:
-                    raise ValueError("\n".join(errors))
+                    raise ValueError("⚠️ 系统拦截：订单格式不符合规范，未识别到完整字段。这是系统的安全校验机制，请上传格式清晰的图片或手动录入。")
                 ids = import_orders(store, rows, digest, uploaded.name, raw, result["engine"], result["raw_text"])
                 st.success(f"已保存 {len(ids)} 笔订单；刷新或重复上传不会重复入单。")
             except (ValueError, OSError) as exc:

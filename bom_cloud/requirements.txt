@@ -6,3 +6,5 @@ filelock>=3.16,<4
 pypdf>=5,<7
 pypdfium2>=4.30,<6
 rapidocr-onnxruntime==1.4.4
+# RapidOCR 的运行引擎显式列出，避免云端只装识别封装而缺少推理后端。
+onnxruntime>=1.17,<2

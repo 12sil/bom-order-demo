@@ -97,8 +97,10 @@ def get_ocr():
     try:
         from rapidocr_onnxruntime import RapidOCR
         return RapidOCR(intra_op_num_threads=2, inter_op_num_threads=2)
-    except ImportError as exc:
-        raise ValueError("本地 OCR 尚未安装，请运行安装依赖脚本。") from exc
+    except Exception as exc:
+        # 云端可能是动态库、Python 版本或推理后端加载失败；保留真实原因，避免误报“未安装”。
+        detail = str(exc).strip().replace("\n", " ")[:240] or exc.__class__.__name__
+        raise ValueError(f"OCR 引擎启动失败（{exc.__class__.__name__}）：{detail}。请查看部署日志。") from exc
 
 
 def ocr_image(raw):

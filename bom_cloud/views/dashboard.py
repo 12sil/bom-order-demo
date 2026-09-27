@@ -1,6 +1,7 @@
 """板块二：智能发货预警。预警清单独立于月份筛选，防止跨月漏单。"""
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 from core.rules import today_china
 from core.query import enriched_orders, shipped_summary
 from core.service import update_status
@@ -25,6 +26,38 @@ def render(store):
         sum(o["level"] == "normal" for o in orders),
     ]}, index=["高风险", "临期", "安全"])
     st.bar_chart(chart, y="订单数量", color="#3158dd", height=260)
+    # 与数字看板使用相同口径；无未发货订单时不绘制误导性的空圆环。
+    ring_col, trend_col = st.columns(2)
+    with ring_col:
+        st.markdown("#### 红黄绿 · 预警状态占比")
+        if chart["订单数量"].sum():
+            fig = px.pie(chart.reset_index(names="状态"), names="状态", values="订单数量",
+                         hole=.65, color="状态", color_discrete_map={
+                             "高风险": "#e45756", "临期": "#eebd36", "安全": "#35a778"})
+            fig.update_traces(textinfo="label+percent", hovertemplate="%{label}：%{value} 笔<extra></extra>")
+            fig.update_layout(height=320, margin=dict(l=15, r=15, t=20, b=20),
+                              paper_bgcolor="rgba(0,0,0,0)", showlegend=False)
+            st.plotly_chart(fig, use_container_width=True, key="risk_ring")
+        else:
+            st.info("暂无未发货订单。")
+    with trend_col:
+        st.markdown("#### 月度订单分布")
+        # 按交付月份统计订单笔数；补齐中间空月份，跨年也按日期排序。
+        active = [o for o in orders if o["status"] != "已取消"]
+        st.caption("按客户交付月份统计订单笔数，排除已取消订单；不受下方月份筛选影响。")
+        if active:
+            counts = pd.Series([o["order_month"] for o in active]).value_counts().sort_index()
+            months_all = pd.period_range(counts.index.min(), counts.index.max(), freq="M").astype(str)
+            trend = counts.reindex(months_all, fill_value=0).rename_axis("月份").reset_index(name="订单笔数")
+            fig = px.line(trend, x="月份", y="订单笔数", markers=True,
+                          color_discrete_sequence=["#3158dd"])
+            fig.update_xaxes(type="category")
+            fig.update_yaxes(rangemode="tozero", dtick=1)
+            fig.update_layout(height=320, margin=dict(l=15, r=15, t=20, b=20),
+                              paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig, use_container_width=True, key="monthly_trend")
+        else:
+            st.info("暂无可统计订单。")
     today = today_china()
     left, right = st.columns([3, 1])
     with left:

@@ -1,4 +1,5 @@
 /* 统一视觉：冷白工作台、深蓝文字和靛蓝重点，保留 Streamlit 原生交互。 */
+.brand-banner {padding: 1.2rem 1.5rem; margin-bottom: 1.8rem; border-radius: 16px; background: linear-gradient(115deg, #16345b, #3158a0); color: white; font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 700; box-shadow: 0 6px 20px rgba(29,55,92,.12);}
 /* 隐藏右上角工具菜单和页脚；保留页头，确保手机端仍能打开侧边栏。 */
 #MainMenu, [data-testid="stToolbar"], [data-testid="stHeader"], footer {display: none !important;}
 .stApp {background: #f6f8fb; font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;}

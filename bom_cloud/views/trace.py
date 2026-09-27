@@ -1,5 +1,7 @@
 """板块一：双向关联查询。仅展示，不保存、不修改任何业务数据。"""
 import streamlit as st
+import pandas as pd
+from decimal import Decimal
 from core.query import customer_trace, product_trace, order_history
 from views.common import header, order_table, history_table, product_details
 
@@ -24,6 +26,25 @@ def render(store):
             c.metric("涉及订单月份", len({o["order_month"] for o in orders}))
             st.subheader("所有历史订单")
             order_table(orders)
+            st.markdown("#### 📊 客户各产品采购数量")
+            st.caption("汇总该客户历史订单数量，排除已取消订单；不同单位分开展示。")
+            # 使用产品 ID 与单位分组，避免同名产品或不同计量单位混加。
+            totals = {}
+            for order in orders:
+                if order["status"] == "已取消":
+                    continue
+                key = (order["product_id"], order["unit"])
+                if key not in totals:
+                    totals[key] = {"产品": f"{order['current_product']} · {order['product_code']}",
+                                   "单位": order["unit"], "采购数量": Decimal(0)}
+                totals[key]["采购数量"] += Decimal(order["quantity"])
+            if totals:
+                frame = pd.DataFrame([{**row, "采购数量": float(row["采购数量"])} for row in totals.values()])
+                for unit, group in frame.groupby("单位", sort=False):
+                    st.caption(f"计量单位：{unit}")
+                    st.bar_chart(group.set_index("产品")[["采购数量"]], color="#3158dd", height=280)
+            else:
+                st.info("该客户暂无可统计的采购数量。")
             # 产品展开详情与产品反查共用同一份资料，避免数据割裂。
             with st.expander("查看该客户涉及的产品与 BOM 资料"):
                 ids = {o["product_id"] for o in orders}

@@ -11,16 +11,16 @@ LABELS = {"customer_name": "客户名称", "product_name": "产品名称", "prod
 
 
 def render(store):
-    header("03 / DOCUMENT INTELLIGENCE", "客户订单文件智能导入", "截图、图片、PDF → 字段识别 → 关联档案 → 自动回推发货日 → 临时 CSV 演示保存。")
+    header("03 / DOCUMENT INTELLIGENCE", "客户订单文件智能导入", "截图、图片、PDF → 字段识别 → 关联档案 → 自动回推发货日 → 保存订单。")
     st.markdown('<div class="flow">01 上传文件　→　02 智能识别　→　03 规则校验　→　04 自动入单</div>', unsafe_allow_html=True)
     engine = "本地 OCR（免费）"
-    st.caption("免费神经网络 OCR + 字段提取。只上传虚构订单；模糊或缺失字段需要核对。本展示版不调用付费 AI 接口。")
+    st.caption("神经网络 OCR + 字段提取。模糊或缺失字段需要核对。")
     sample = ROOT / "samples" / "客户订单样例.png"
     if sample.exists():
-        st.download_button("下载虚构订单样例图片", sample.read_bytes(), file_name="客户订单样例.png", mime="image/png")
+        st.download_button("下载订单样例图片", sample.read_bytes(), file_name="客户订单样例.png", mime="image/png")
     uploaded = st.file_uploader("上传客户订单文件", type=["png", "jpg", "jpeg", "webp", "pdf"], help="单文件不超过 20MB，PDF 最多 12 页。")
     if uploaded is None:
-        st.info("请上传虚构订单样例。完整字段可一键识别入单，无需手动输入。")
+        st.info("请上传订单文件。完整字段可一键识别入单，无需手动输入。")
         return
     raw = uploaded.getvalue()
     digest = file_hash(raw)

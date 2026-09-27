@@ -9,7 +9,9 @@ class SessionCsvStore(CsvStore):
     """CSV 是一致性来源；成功读取或提交后才更新 session_state，避免半写入。"""
 
     def read(self):
-        data = super().read()
+        # 所有页面共用此读取入口；只在实际读取期间显示，不人为延长等待。
+        with st.spinner("加载中..."):
+            data = super().read()
         st.session_state["orders"] = deepcopy(data["orders"])
         return data
 

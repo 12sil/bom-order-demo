@@ -1,0 +1,8 @@
+# 本项目不自动读取 .env；请使用系统环境变量，或在智能导入页输入密钥。
+# 本地数据与运行环境不提交到源代码管理。
+data/
+.venv/
+__pycache__/
+*.pyc
+.env
+.streamlit/secrets.toml

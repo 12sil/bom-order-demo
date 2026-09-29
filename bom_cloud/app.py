@@ -21,7 +21,7 @@ st.set_page_config(page_title="序单 BOM · 智能订单管理", page_icon="�
 st.markdown("<style>" + (ROOT / "assets/style.css").read_text(encoding="utf-8-sig") + "</style>", unsafe_allow_html=True)
 st.markdown('<div class="brand-banner">智造BOM | 智能订单协同系统</div>', unsafe_allow_html=True)
 with st.sidebar:
-    st.markdown("# 📦 智造 BOM")
+    st.markdown("# ⚙️ 智造BOM")
     st.caption("小微企业 · 订单与产品客户管理")
     # 线上包固定为演示模式，不提供进入真实业务空间的入口。
     demo = True

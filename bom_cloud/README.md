@@ -1,4 +1,4 @@
-# 智造BOM：免费线上比赛展示版
+# 序单 BOM：免费线上比赛展示版
 
 本包专门用于 Streamlit Community Cloud，不包含本机业务 CSV、产品附件、账号或密钥。作品架构和小程序预留页面已删除。
 
@@ -40,4 +40,3 @@
 
 https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy
 https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/app-dependencies
-

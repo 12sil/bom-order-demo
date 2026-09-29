@@ -17,21 +17,21 @@ from core.session_store import SessionCsvStore
 from core.demo import seed_demo, reset_demo_orders
 from views import dashboard, trace, importer, orders, customers, products
 
-st.set_page_config(page_title="智造BOM · 订单与物料协同工作台", page_icon="📦", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="序单 BOM · 智能订单管理", page_icon="📦", layout="wide", initial_sidebar_state="expanded")
 st.markdown("<style>" + (ROOT / "assets/style.css").read_text(encoding="utf-8-sig") + "</style>", unsafe_allow_html=True)
-st.markdown('<div class="brand-banner">智造BOM | 订单与物料协同工作台</div>', unsafe_allow_html=True)
+st.markdown('<div class="brand-banner">智造BOM | 智能订单协同系统</div>', unsafe_allow_html=True)
 with st.sidebar:
-    st.markdown("# ⚙️ 智造BOM")
-    st.caption("小微企业 · 订单预警 · 双向追溯 · BOM 资料")
+    st.markdown("# 📦 序单 BOM")
+    st.caption("小微企业 · 订单与产品客户管理")
     # 线上包固定为演示模式，不提供进入真实业务空间的入口。
     demo = True
-    st.caption("订单预警 · 双向追溯 · BOM 资料")
+    st.caption("订单与产品客户管理")
     st.divider()
 try:
     # 每个浏览器会话使用独立演示目录，避免评委互相修改同一份样例。
     if "demo_session" not in st.session_state:
         st.session_state.demo_session = uuid.uuid4().hex
-    demo_root = Path(tempfile.gettempdir()) / "bom_workspace_sessions" / st.session_state.demo_session
+    demo_root = Path(tempfile.gettempdir()) / "bom_competition_sessions" / st.session_state.demo_session
     with st.spinner("加载中..."):
         store = SessionCsvStore(demo_root)
         if demo:
@@ -48,25 +48,24 @@ except (StorageError, OSError, Timeout) as exc:
 
 # Streamlit 原生多页导航：每个页面一个 render 函数，便于单独修改和测试。
 pages = {
-    "核心工作台": [
+    "三大独立业务模块": [
         st.Page(partial(trace.render, store), title="① 双向数据查询", icon="🔎", url_path="trace"),
-        st.Page(partial(dashboard.render, store), title="② 交付预警看板", icon="📊", url_path="dashboard", default=True),
-        st.Page(partial(importer.render, store), title="③ 单据智能导入", icon="✨", url_path="import"),
+        st.Page(partial(dashboard.render, store), title="② 智能发货预警", icon="📊", url_path="dashboard", default=True),
+        st.Page(partial(importer.render, store), title="③ 订单文件智能导入", icon="✨", url_path="import"),
     ],
     "基础资料与业务维护": [
-        st.Page(partial(orders.render, store), title="订单与状态管理", icon="📝", url_path="orders"),
-        st.Page(partial(customers.render, store), title="客户主数据", icon="👥", url_path="customers"),
-        st.Page(partial(products.render, store), title="物料与 BOM 主数据", icon="📦", url_path="products"),
+        st.Page(partial(orders.render, store), title="手动订单 / 状态管理", icon="📝", url_path="orders"),
+        st.Page(partial(customers.render, store), title="客户档案", icon="👥", url_path="customers"),
+        st.Page(partial(products.render, store), title="产品 BOM 资料库", icon="📦", url_path="products"),
     ],
 }
 page = st.navigation(pages)
 with st.sidebar:
     st.divider()
-    st.caption("交付日期与订单状态")
-    st.markdown('<div class="core-formula">💡 工作台：先看风险，再查关联，最后处理订单</div>', unsafe_allow_html=True)
+    st.caption("最终交付日 − 3 天 = 必须发货日")
+    st.markdown('<div class="core-formula">💡 核心逻辑：最终交付日 − 3 天缓冲期 = 必须发货日</div>', unsafe_allow_html=True)
 try:
     page.run()
 except (StorageError, OSError, Timeout) as exc:
     logging.exception("数据操作失败")
     st.error(f"数据暂时不可用：{exc}。已有快照不会被覆盖，请检查磁盘和文件占用后重试。")
-

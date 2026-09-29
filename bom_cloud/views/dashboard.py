@@ -25,7 +25,7 @@ def render(store):
         sum(o["level"] == "urgent" for o in orders),
         sum(o["level"] == "normal" for o in orders),
     ]}, index=["高风险", "临期", "安全"])
-    st.bar_chart(chart, y="订单数量", color="#6f9caf", height=260)
+    st.bar_chart(chart, y="订单数量", color="#3158dd", height=260)
     # 与数字看板使用相同口径；无未发货订单时不绘制误导性的空圆环。
     ring_col, trend_col = st.columns(2)
     with ring_col:
@@ -33,7 +33,7 @@ def render(store):
         if chart["订单数量"].sum():
             fig = px.pie(chart.reset_index(names="状态"), names="状态", values="订单数量",
                          hole=.65, color="状态", color_discrete_map={
-                             "高风险": "#d88778", "临期": "#d6ae62", "安全": "#78a891"})
+                             "高风险": "#e45756", "临期": "#eebd36", "安全": "#35a778"})
             fig.update_traces(textinfo="label+percent", hovertemplate="%{label}：%{value} 笔<extra></extra>")
             fig.update_layout(height=320, margin=dict(l=15, r=15, t=20, b=20),
                               paper_bgcolor="rgba(0,0,0,0)", showlegend=False)
@@ -50,7 +50,7 @@ def render(store):
             months_all = pd.period_range(counts.index.min(), counts.index.max(), freq="M").astype(str)
             trend = counts.reindex(months_all, fill_value=0).rename_axis("月份").reset_index(name="订单笔数")
             fig = px.line(trend, x="月份", y="订单笔数", markers=True,
-                          color_discrete_sequence=["#7099ad"])
+                          color_discrete_sequence=["#3158dd"])
             fig.update_xaxes(type="category")
             fig.update_yaxes(rangemode="tozero", dtick=1)
             fig.update_layout(height=320, margin=dict(l=15, r=15, t=20, b=20),
@@ -107,4 +107,3 @@ def render(store):
         else:
             st.info("该月还没有实际出货记录。")
         st.caption("以实际发货日期统计，已取消订单排除；不同计量单位分开汇总。")
-

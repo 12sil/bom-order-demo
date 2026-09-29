@@ -17,7 +17,7 @@ from core.session_store import SessionCsvStore
 from core.demo import seed_demo, reset_demo_orders
 from views import dashboard, trace, importer, orders, customers, products
 
-st.set_page_config(page_title="序单 BOM · 智能订单管理", page_icon="📦", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="智造BOM · 订单协同与交期智能预警系统", page_icon="📦", layout="wide", initial_sidebar_state="expanded")
 st.markdown("<style>" + (ROOT / "assets/style.css").read_text(encoding="utf-8-sig") + "</style>", unsafe_allow_html=True)
 st.markdown('<div class="brand-banner">智造BOM | 智能订单协同系统</div>', unsafe_allow_html=True)
 with st.sidebar:
